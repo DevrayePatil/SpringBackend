@@ -1,20 +1,38 @@
 package com.example.springbackend.controller;
 
 import com.example.springbackend.models.Product;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.springbackend.services.ProductService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class ProductController {
 
-    @PostMapping("/products")
-    public void addProduct() {
+    ProductService productService;
 
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
-    public Product getProduct(long id) {
+    @PostMapping("/products")
+    public Product addProduct(@RequestBody Product product) {
+        Product p = productService.addProduct(product.getId(),
+                product.getTitle(), product.getDescription(),
+                product.getImage(), product.getPrice(),
+                product.getCategory().getTitle());
+        return p;
+    }
 
-        return null;
+    @GetMapping("/products/{id}")
+    public Product getProduct(@PathVariable("id") long id) {
+
+        return productService.getProduct(id);
+    }
+
+    @GetMapping("/products")
+    public List<Product> getProducts() {
+        return productService.getProducts();
     }
 
     public void updateProduct(Product product) {

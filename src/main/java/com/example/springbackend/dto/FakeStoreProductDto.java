@@ -1,33 +1,20 @@
-package com.example.springbackend.models;
+package com.example.springbackend.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.example.springbackend.models.Category;
+import com.example.springbackend.models.Product;
 
-
-public class Product {
+public class FakeStoreProductDto {
     private long id;
-    private String title;
+    private  String title;
     private String description;
-    private Double price;
+    private double price;
     private String image;
-    private Category category;
-
-    public Product() {
-
-    }
-
-    public Product(long id, String title, String description, Double price, String image, Category category) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.image = image;
-        this.category = category;
-    }
+    private String category;
 
     public long getId() {
         return id;
     }
+
 
     public void setId(long id) {
         this.id = id;
@@ -49,11 +36,11 @@ public class Product {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -65,23 +52,39 @@ public class Product {
         this.image = image;
     }
 
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Product getProduct() {
+        Product product = new Product();
+        product.setId(id);
+        product.setTitle(title);
+        product.setPrice(price);
+        product.setDescription(description);
+        product.setImage(image);
+
+        Category cat = new Category();
+        cat.setTitle(category);
+
+        product.setCategory(cat);
+
+        return product;
     }
 
     @Override
     public String toString() {
-        return "Product{" +
+        return "FakeStoreProductDto{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", image='" + image + '\'' +
-                ", category=" + category +
+                ", category='" + category + '\'' +
                 '}';
     }
 }
