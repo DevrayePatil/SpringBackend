@@ -9,9 +9,6 @@ public class SpringBackendApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBackendApplication.class, args);
-
-		Product product = new Product();
-		System.out.print(product);
 	}
 
 }

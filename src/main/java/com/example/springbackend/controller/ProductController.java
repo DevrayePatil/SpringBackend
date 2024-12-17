@@ -1,10 +1,15 @@
 package com.example.springbackend.controller;
 
+import com.example.springbackend.dto.ErrorDto;
+import com.example.springbackend.exceptions.ProductNotFoundException;
 import com.example.springbackend.models.Product;
 import com.example.springbackend.services.ProductService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 public class ProductController {
@@ -17,17 +22,17 @@ public class ProductController {
 
     @PostMapping("/products")
     public Product addProduct(@RequestBody Product product) {
-        Product p = productService.addProduct(product.getId(),
+        return productService.addProduct(product.getId(),
                 product.getTitle(), product.getDescription(),
                 product.getImage(), product.getPrice(),
                 product.getCategory().getTitle());
-        return p;
     }
 
     @GetMapping("/products/{id}")
-    public Product getProduct(@PathVariable("id") long id) {
+    public ResponseEntity<Product> getProduct(@PathVariable("id") long id) throws ProductNotFoundException {
 
-        return productService.getProduct(id);
+        Product p = productService.getProduct(id);
+        return new ResponseEntity<>(p, OK);
     }
 
     @GetMapping("/products")
@@ -41,5 +46,13 @@ public class ProductController {
 
     public  void deleteProduct(long id) {
 
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    private ResponseEntity<ErrorDto> handelProductNotFound(Exception e) {
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setMessage(e.getMessage());
+
+        return  new ResponseEntity<>(errorDto, NOT_FOUND);
     }
 }

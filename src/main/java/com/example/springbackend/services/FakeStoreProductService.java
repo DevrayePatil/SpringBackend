@@ -1,7 +1,7 @@
 package com.example.springbackend.services;
 
 import com.example.springbackend.dto.FakeStoreProductDto;
-import com.example.springbackend.models.Category;
+import com.example.springbackend.exceptions.ProductNotFoundException;
 import com.example.springbackend.models.Product;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,16 +29,22 @@ public class FakeStoreProductService implements ProductService{
         fakeStoreProductDto.setCategory(category);
         fakeStoreProductDto.setPrice(price);
 
-        FakeStoreProductDto response = restTemplate.postForObject("https://fakestoreapi.com/products", fakeStoreProductDto, FakeStoreProductDto.class);
+        FakeStoreProductDto response = restTemplate.
+                postForObject("https://fakestoreapi.com/products", fakeStoreProductDto,
+                        FakeStoreProductDto.class);
 
         return response.getProduct();
     }
 
     @Override
-    public Product getProduct(long id) {
+    public Product getProduct(long id) throws ProductNotFoundException {
         System.out.println("We are in the single product service");
-        FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products/" + id,
+        FakeStoreProductDto fakeStoreProductDto = restTemplate
+                .getForObject("https://fakestoreapi.com/products/" + id,
                 FakeStoreProductDto.class);
+        if (fakeStoreProductDto == null) {
+            throw new ProductNotFoundException("Product not found with id " + id);
+        }
         System.out.println(fakeStoreProductDto);
 
         return fakeStoreProductDto.getProduct();
@@ -46,7 +52,8 @@ public class FakeStoreProductService implements ProductService{
 
     @Override
     public List<Product> getProducts() {
-        FakeStoreProductDto[] fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products",
+        FakeStoreProductDto[] fakeStoreProductDto = restTemplate
+                .getForObject("https://fakestoreapi.com/products",
                 FakeStoreProductDto[].class);
         System.out.println("From Products service");
 
