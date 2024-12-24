@@ -1,21 +1,22 @@
 package com.example.springbackend.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 
-@Setter
 @Getter
-public class Category {
-    private long id;
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Category extends BaseModel{
     private String title;
-
-    public Category() {
-    }
-
-    public Category(long id, String title) {
-        this.id = id;
-        this.title = title;
-    }
-
+//    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+//    List<Product> products;
 }

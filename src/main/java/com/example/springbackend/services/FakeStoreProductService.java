@@ -8,10 +8,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-@Service
+@Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService{
 
     RestTemplate restTemplate;
+    final String fakeStoreUrl= "https://fakestoreapi.com/products/";
 
     public FakeStoreProductService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -19,18 +20,17 @@ public class FakeStoreProductService implements ProductService{
 
 
     @Override
-    public Product addProduct(long id, String title, String description,
-                              String image, Double price, String category) {
+    public Product addProduct(Product product) {
         FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
-        fakeStoreProductDto.setId(id);
-        fakeStoreProductDto.setTitle(title);
-        fakeStoreProductDto.setDescription(description);
-        fakeStoreProductDto.setImage(image);
-        fakeStoreProductDto.setCategory(category);
-        fakeStoreProductDto.setPrice(price);
+        fakeStoreProductDto.setId(product.getId());
+        fakeStoreProductDto.setTitle(product.getTitle());
+        fakeStoreProductDto.setDescription(product.getDescription());
+        fakeStoreProductDto.setImage(product.getImage());
+        fakeStoreProductDto.setCategory(product.getCategory().getTitle());
+        fakeStoreProductDto.setPrice(product.getPrice());
 
         FakeStoreProductDto response = restTemplate.
-                postForObject("https://fakestoreapi.com/products", fakeStoreProductDto,
+                postForObject(fakeStoreUrl, fakeStoreProductDto,
                         FakeStoreProductDto.class);
 
         return response.getProduct();
@@ -40,7 +40,7 @@ public class FakeStoreProductService implements ProductService{
     public Product getProduct(long id) throws ProductNotFoundException {
         System.out.println("We are in the single product service");
         FakeStoreProductDto fakeStoreProductDto = restTemplate
-                .getForObject("https://fakestoreapi.com/products/" + id,
+                .getForObject(fakeStoreUrl + id,
                 FakeStoreProductDto.class);
         if (fakeStoreProductDto == null) {
             throw new ProductNotFoundException("Product not found with id " + id);
@@ -53,7 +53,7 @@ public class FakeStoreProductService implements ProductService{
     @Override
     public List<Product> getProducts() {
         FakeStoreProductDto[] fakeStoreProductDto = restTemplate
-                .getForObject("https://fakestoreapi.com/products",
+                .getForObject(fakeStoreUrl,
                 FakeStoreProductDto[].class);
         System.out.println("From Products service");
 
@@ -66,7 +66,16 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        return null;
+    public Product updateProduct(long id, Product product) {
+        FakeStoreProductDto dto = restTemplate.
+                patchForObject(fakeStoreUrl + id, product, FakeStoreProductDto.class);
+
+        Product updatedProduct = dto.getProduct();
+        return updatedProduct;
+    }
+
+    @Override
+    public void deleteProduct(long id) throws ProductNotFoundException {
+        restTemplate.delete(fakeStoreUrl + id);
     }
 }
